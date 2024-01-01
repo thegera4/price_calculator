@@ -20,6 +20,8 @@ func (fm FileManager) ReadLines() ([]string, error) {
 		return nil, errors.New("Failed to open file!")
 	}
 
+	defer file.Close() //it is executed once the sourrounding method finishes
+
 	scanner := bufio.NewScanner(file)
 
 	var lines []string
@@ -30,11 +32,11 @@ func (fm FileManager) ReadLines() ([]string, error) {
 	err = scanner.Err()
 
 	if err != nil {
-		file.Close()
+		//file.Close()
 		return nil, errors.New("Failed to read file!")
 	}
 
-	file.Close()
+	//file.Close()
 
 	return lines, nil
 }
@@ -45,16 +47,18 @@ func (fm FileManager) WriteResult(data interface{}) error {
 		return errors.New("Failed to create file!")
 	}
 
+	defer file.Close() //it is executed once the sourrounding method finishes
+
 	time.Sleep(3 * time.Second) //simulate a slow writing process in order to use concurrency
 
 	encoder := json.NewEncoder(file)
 	err = encoder.Encode(data)
 	if err != nil {
-		file.Close()
+		//file.Close()
 		return errors.New("Failed to encode data!")
 	}
 
-	file.Close()
+	//file.Close()
 	return nil
 }
 
