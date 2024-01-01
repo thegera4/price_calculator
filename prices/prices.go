@@ -29,10 +29,10 @@ func (job *TaxIncludedPriceJob) LoadData() error {
 	return nil
 }
 
-func (job *TaxIncludedPriceJob) Process() error {
+func (job *TaxIncludedPriceJob) Process(donChan chan bool) /*error */{ //you can execute Process as a go routine and regular function if you need it
 	err := job.LoadData()
 	if err != nil {
-		return err
+		//return err
 	}
 
 	result := make(map[string]string)
@@ -44,7 +44,8 @@ func (job *TaxIncludedPriceJob) Process() error {
 	
 	job.TaxIncludedPrices = result
 
-	return job.IOManager.WriteResult(job)	
+	job.IOManager.WriteResult(job)	//return is not needed because the returned value is not support by go routines
+	donChan <- true // send a signal to the channel to indicate that the job is done
 }
 
 func NewTaxIncludedPriceJob(iom iomanager.IOManager, taxRate float64) *TaxIncludedPriceJob {
